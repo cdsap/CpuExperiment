@@ -18,7 +18,7 @@ jobs:
             -   id: calculate_iterations
                 run: |
                     iterations=" ["
-                    for i in {1..2}
+                    for i in {1..1}
                     do
                       if [ $i == 1 ]
                       then
@@ -63,11 +63,11 @@ jobs:
 
 
             - name: Assemble Release
-              run: ./gradlew assembleDebug -Dorg.gradle.workers.max=${{ matrix.workers }}
+              run: ./gradlew :help -Dorg.gradle.workers.max=${{ matrix.workers }}
               env:
                   GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
 
             - uses: actions/upload-artifact@v4
               with:
                 name: my-artifact
-                path: /home/runner/work/_actions/catchpoint/workflow-telemetry-action/v2/dist/proc-tracer/proc-trace.out
+                path: /home/runner/work/_actions/catchpoint/workflow-telemetry-action/v2/dist/proc-tracer/
