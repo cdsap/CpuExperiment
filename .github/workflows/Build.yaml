@@ -18,7 +18,7 @@ jobs:
             -   id: calculate_iterations
                 run: |
                     iterations=" ["
-                    for i in {1..${{ github.event.inputs.iterations }}}
+                    for i in {1..50}
                     do
                       if [ $i == 1 ]
                       then
