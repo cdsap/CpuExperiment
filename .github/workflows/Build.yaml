@@ -63,7 +63,7 @@ jobs:
 
 
             - name: Assemble Release
-              run: ./gradlew assembleRelease -Dorg.gradle.workers.max=${{ matrix.workers }} -Dscan.tag.workers${{ matrix.workers }}
+              run: ./gradlew assembleDebug -Dorg.gradle.workers.max=${{ matrix.workers }}
               env:
                   GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
 
