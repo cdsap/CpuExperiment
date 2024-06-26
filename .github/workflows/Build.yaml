@@ -1,42 +1,43 @@
 name: Build
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
+    push:
+        branches:
+            - main
+    pull_request:
 
 concurrency:
-  group: build-${{ github.ref }}
-  cancel-in-progress: true
+    group: build-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-  test_and_apk:
-    strategy:
-        matrix:
-            workkers: [1,2,3,4]
+    test_and_apk:
+        strategy:
+            matrix:
+                workers: [1, 2, 3, 4]
 
-    name: "Local tests and APKs"
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
+        name: "Local tests and APKs"
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            pull-requests: write
 
-    timeout-minutes: 60
+        timeout-minutes: 60
 
-    steps:
-      - name: Collect Workflow Telemetry
-        uses: catchpoint/workflow-telemetry-action@v2
+        steps:
+            - name: Collect Workflow Telemetry
+              uses: catchpoint/workflow-telemetry-action@v2
 
-      - name: Checkout
-        uses: actions/checkout@v4
+            - name: Checkout
+              uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: 17
+            - name: Set up JDK 17
+              uses: actions/setup-java@v4
+              with:
+                  distribution: 'zulu'
+                  java-version: 17
 
-        run: ./gradlew assembleRelease -Dorg.gradle.workers.max=${{ matrix.workers }}
-        env:
-            GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
+            - name: Assemble Release
+              run: ./gradlew assembleRelease -Dorg.gradle.workers.max=${{ matrix.workers }}
+              env:
+                  GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
