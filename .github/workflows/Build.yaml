@@ -37,3 +37,5 @@ jobs:
           distribution: 'zulu'
           java-version: 17
         run: ./gradlew assembleRelease -Dorg.gradle.workers.max=${{ matrix.workers }}
+        env:
+            GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
