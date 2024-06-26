@@ -11,10 +11,34 @@ concurrency:
     cancel-in-progress: true
 
 jobs:
+    iterations:
+        name: Generate versions
+        runs-on: ubuntu-latest
+        steps:
+            -   id: calculate_iterations
+                run: |
+                    iterations=" ["
+                    for i in {1..${{ github.event.inputs.iterations }}}
+                    do
+                      if [ $i == 1 ]
+                      then
+                        iterations="$iterations \"$i\""
+                      else
+                        iterations="$iterations  , \"$i\""
+                      fi
+                    done
+                    iterations="$iterations ]"
+                    echo "iterations=$iterations" >> $GITHUB_OUTPUT
+                    echo $GITHUB_OUTPUT
+        outputs:
+            iterations: ${{ steps.calculate_iterations.outputs.iterations }}
+
     test_and_apk:
+        needs: [iterations]
         strategy:
             matrix:
                 workers: [1, 2, 3, 4]
+                runs:   ${{ fromJson(needs.iterations.outputs.iterations) }}
 
         name: "Local tests and APKs"
         runs-on: ubuntu-latest
@@ -38,6 +62,6 @@ jobs:
                   java-version: 17
 
             - name: Assemble Release
-              run: ./gradlew assembleRelease -Dorg.gradle.workers.max=${{ matrix.workers }}
+              run: ./gradlew assembleRelease -Dorg.gradle.workers.max=${{ matrix.workers }} -Dscan.tag.workers${{ matrix.workers }}
               env:
                   GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
