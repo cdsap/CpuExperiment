@@ -63,7 +63,11 @@ jobs:
 
 
             - name: Assemble Release
-              run: ./gradlew :help -Dorg.gradle.workers.max=${{ matrix.workers }}
+              run: |
+                ./gradlew :testProdDebugUnitTest -Dorg.gradle.workers.max=${{ matrix.workers }}
+                  cd /home/runner/work/_actions/catchpoint/workflow-telemetry-action/v2/dist/proc-tracer/
+
+
               env:
                   GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
 
