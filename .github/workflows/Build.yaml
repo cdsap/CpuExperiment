@@ -64,7 +64,7 @@ jobs:
 
             - name: Assemble Release
               run: |
-                ./gradlew :testProdDebugUnitTest -Dorg.gradle.workers.max=${{ matrix.workers }}
+                ./gradlew testProdDebugUnitTest -Dorg.gradle.workers.max=${{ matrix.workers }}
                   cd /home/runner/work/_actions/catchpoint/workflow-telemetry-action/v2/dist/proc-tracer/
 
 
