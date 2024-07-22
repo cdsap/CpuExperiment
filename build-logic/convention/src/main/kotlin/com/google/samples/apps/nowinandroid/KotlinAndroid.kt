@@ -101,7 +101,7 @@ private inline fun <reified T : KotlinTopLevelExtension> Project.configureKotlin
 private fun Project.configureKotlinWithBuildServices() {
     RegistrationAction(
         project,
-        2,
+        1,
     ).execute()
     tasks.withType<KotlinCompile>().configureEach {
         usesService(
