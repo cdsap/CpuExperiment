@@ -17,6 +17,8 @@
 package com.google.samples.apps.nowinandroid
 
 import com.android.build.api.dsl.CommonExtension
+import com.android.build.gradle.internal.services.getBuildService
+import com.google.samples.apps.nowinandroid.KotlinCompileBuildService.RegistrationAction
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
@@ -24,10 +26,12 @@ import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.provideDelegate
+import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinTopLevelExtension
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 /**
  * Configure base Kotlin with Android options
@@ -50,7 +54,7 @@ internal fun Project.configureKotlinAndroid(
             isCoreLibraryDesugaringEnabled = true
         }
     }
-
+    configureKotlinWithBuildServices()
     configureKotlin<KotlinAndroidProjectExtension>()
 
     dependencies {
@@ -68,7 +72,7 @@ internal fun Project.configureKotlinJvm() {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-
+    configureKotlinWithBuildServices()
     configureKotlin<KotlinJvmProjectExtension>()
 }
 
@@ -90,5 +94,21 @@ private inline fun <reified T : KotlinTopLevelExtension> Project.configureKotlin
             // Enable experimental coroutines APIs, including Flow
             "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
         )
+    }
+}
+
+private fun Project.configureKotlinWithBuildServices() {
+    RegistrationAction(
+        project,
+        1,
+    ).execute()
+    tasks.withType<KotlinCompile>().configureEach {
+        usesService(
+            getBuildService(
+                project.gradle.sharedServices,
+                KotlinCompileBuildService::class.java,
+            ),
+        )
+
     }
 }
