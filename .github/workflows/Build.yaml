@@ -18,7 +18,7 @@ jobs:
             -   id: calculate_iterations
                 run: |
                     iterations=" ["
-                    for i in {1..50}
+                    for i in {1..20}
                     do
                       if [ $i == 1 ]
                       then
@@ -63,7 +63,7 @@ jobs:
 
             - name: Assemble Release
               run: |
-                ./gradlew assembleDebug -Dorg.gradle.workers.max=${{ matrix.workers }}  -Dscan.tag.workers${{ matrix.workers }} -Dscan.tag.assembleDebug
+                ./gradlew assembleDebug -Dorg.gradle.workers.max=${{ matrix.workers }} -Dscan.tag.workers${{ matrix.runs }}  -Dscan.tag.workers${{ matrix.workers }} -Dscan.tag.assembleDebug
               env:
                   GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
 
