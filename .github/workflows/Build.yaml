@@ -3,7 +3,7 @@ name: Build
 on:
     push:
         branches:
-            - main
+            - reproducing_issue_dex
     pull_request:
 
 concurrency:
