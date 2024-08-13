@@ -18,7 +18,7 @@ jobs:
             -   id: calculate_iterations
                 run: |
                     iterations=" ["
-                    for i in {1..20}
+                    for i in {1..4}
                     do
                       if [ $i == 1 ]
                       then
@@ -37,7 +37,7 @@ jobs:
         needs: [iterations]
         strategy:
             matrix:
-                workers: [1, 2, 3, 4]
+                workers: [4]
                 runs:   ${{ fromJson(needs.iterations.outputs.iterations) }}
 
         name: "Local tests and APKs"
@@ -63,7 +63,10 @@ jobs:
 
             - name: Assemble Release
               run: |
-                ./gradlew assembleDebug -Dorg.gradle.workers.max=${{ matrix.workers }} -Dscan.tag.workers${{ matrix.runs }}  -Dscan.tag.workers${{ matrix.workers }} -Dscan.tag.assembleDebug
+                ./gradlew assembleDebug -Dorg.gradle.internal.transform-caching-disabled -Dorg.gradle.workers.max=${{ matrix.workers }} -Dscan.tag.workers${{ matrix.runs }}  -Dscan.tag.workers${{ matrix.workers }} -Dscan.tag.assembleDebug
               env:
                   GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
-
+            - uses: actions/upload-artifact@v4
+              with:
+                name: my-artifact-${{ matrix.workers }}-${{ matrix.runs }}
+                path: /home/runner/.gradle/caches/8.9/transforms/*
