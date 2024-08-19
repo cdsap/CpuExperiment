@@ -10,7 +10,7 @@ jobs:
             - id: calculate_iterations
               run: |
                   iterations=" ["
-                  for i in {1..80}
+                  for i in {1..2}
                   do
                     if [ $i == 1 ]
                     then
@@ -48,4 +48,4 @@ jobs:
                   echo $HOME
                   ./gradlew assembleRelease -Dscan.tag.${{github.run_number}}  -Dscan.tag.${{ matrix.variant }} -Dscan.tag.experiment5
               env:
-                  GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_API_KEY }}
+                  DEVELOCITY_ACCESS_KEY: ${{ secrets.GE_API_KEY }}
