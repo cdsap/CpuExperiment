@@ -48,4 +48,4 @@ jobs:
                   echo $HOME
                   ./gradlew :help -Dscan.tag.${{github.run_number}}  -Dscan.tag.${{ matrix.variant }} -Dscan.tag.experiment5
               env:
-                  DEVELOCITY_ACCESS_KEY: ${{ secrets.GE_API_KEY }}
+                  DEVELOCITY_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
