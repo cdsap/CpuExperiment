@@ -26,4 +26,5 @@ android {
 dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
+    testImplementation("org.junit.vintage:junit-vintage-engine:5.10.1")
 }

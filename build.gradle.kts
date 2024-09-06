@@ -52,3 +52,23 @@ plugins {
     id("io.github.cdsap.kotlinprocess") version "0.1.6"
     id("io.github.cdsap.gradleprocess") version "0.1.2"
 }
+
+
+
+allprojects {
+
+    tasks.withType<Test>().configureEach {
+        useJUnitPlatform()
+        develocity {
+            predictiveTestSelection {
+                enabled = true
+            }
+            testRetry {
+                maxRetries.set(3)
+                failOnPassedAfterRetry.set(true)
+
+            }
+
+        }
+    }
+}
