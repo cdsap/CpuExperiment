@@ -27,7 +27,7 @@ plugins {
 }
 
 develocity {
-    server = "http://ge.solutions-team.gradle.com"
+    server = "https://ge.solutions-team.gradle.com"
     allowUntrustedServer = true
     buildScan {
         uploadInBackground.set(false)
