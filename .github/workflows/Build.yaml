@@ -37,7 +37,7 @@ jobs:
         needs: [ iterations ]
         strategy:
             matrix:
-                workers: [ 500, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000 ]
+                workers:  500, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000
                 runs: ${{ fromJson(needs.iterations.outputs.iterations) }}
 
         name: "Local tests and APKs"
@@ -64,7 +64,7 @@ jobs:
             -   name: Assemble Release
                 run: |
                     sudo apt-get update && sudo apt-get install -y fio
-                    IOPSVALUE={{ matrix.workers }}
+                    IOPSVALUE=${{ matrix.workers }}
                     fio --name=random_read --ioengine=posixaio --rw=randread --bs=4k --size=1G --time_based --runtime=60 --group_reporting --direct=1 --iodepth=16 --rate_iops=$IOPSVALUE
                     ./gradlew assembleDebug -Dscan.tag.fio-experiment  -Dscan.tag.itops{{ matrix.workers }} -Dscan.tag.assembleDebug
                 env:
