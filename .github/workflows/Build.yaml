@@ -18,7 +18,7 @@ jobs:
             -   id: calculate_iterations
                 run: |
                     iterations=" ["
-                    for i in {1..1}
+                    for i in {1..20}
                     do
                       if [ $i == 1 ]
                       then
@@ -65,7 +65,41 @@ jobs:
               run: |
                   sudo apt-get update && sudo apt-get install -y fio
                   fio --name=random_read --ioengine=posixaio --rw=randread --bs=4k --size=1G --time_based --runtime=60 --group_reporting --direct=1 --iodepth=16 --rate_iops=3000
-                  ./gradlew assembleDebug -Dorg.gradle.workers.max=${{ matrix.workers }} -Dscan.tag.workers${{ matrix.runs }}  -Dscan.tag.workers${{ matrix.workers }} -Dscan.tag.assembleDebug
+                  ./gradlew assembleDebug -Dscan.tag.fio -Dorg.gradle.workers.max=${{ matrix.workers }} -Dscan.tag.workers${{ matrix.runs }}  -Dscan.tag.workers${{ matrix.workers }} -Dscan.tag.assembleDebug
               env:
                   GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
 
+
+    test_and_apk2:
+        needs: [iterations]
+        strategy:
+            matrix:
+                workers: [4]
+                runs:   ${{ fromJson(needs.iterations.outputs.iterations) }}
+
+        name: "Local tests and APKs"
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            pull-requests: write
+
+        timeout-minutes: 60
+
+        steps:
+            - name: Collect Workflow Telemetry
+              uses: catchpoint/workflow-telemetry-action@v2
+
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Set up JDK 17
+              uses: actions/setup-java@v4
+              with:
+                  distribution: 'zulu'
+                  java-version: 17
+
+            - name: Assemble Release
+              run: |
+                  ./gradlew assembleDebug -Dscan.tag.no-fio -Dorg.gradle.workers.max=${{ matrix.workers }} -Dscan.tag.workers${{ matrix.runs }}  -Dscan.tag.workers${{ matrix.workers }} -Dscan.tag.assembleDebug
+              env:
+                  GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
