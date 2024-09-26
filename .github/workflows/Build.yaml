@@ -63,7 +63,8 @@ jobs:
 
             - name: Assemble Release
               run: |
-                ./gradlew assembleDebug -Dorg.gradle.workers.max=${{ matrix.workers }} -Dscan.tag.workers${{ matrix.runs }}  -Dscan.tag.workers${{ matrix.workers }} -Dscan.tag.assembleDebug
+                  fio --name=random_read --ioengine=posixaio --rw=randread --bs=4k --size=1G --time_based --runtime=60 --group_reporting --direct=1 --iodepth=16 --rate_iops=3000
+                  ./gradlew assembleDebug -Dorg.gradle.workers.max=${{ matrix.workers }} -Dscan.tag.workers${{ matrix.runs }}  -Dscan.tag.workers${{ matrix.workers }} -Dscan.tag.assembleDebug
               env:
                   GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
 
