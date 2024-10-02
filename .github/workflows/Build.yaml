@@ -64,7 +64,7 @@ jobs:
             -   name: Assemble Release
                 run: |
                     sudo apt-get update && sudo apt-get install -y fio
-                    fio --name=random_read --ioengine=posixaio --runtime=720 --rw=randread --bs=4k --size=1G --time_based --runtime=60 --group_reporting --direct=1 --iodepth=16 --rate_iops=${{ matrix.workers }} &
+                    fio --name=random_read --ioengine=posixaio --runtime=720 --rw=randread --bs=4k --size=1G --time_based  --group_reporting --direct=1 --iodepth=16 --rate_iops=${{ matrix.workers }} &
                     ./gradlew assembleDebug -Dscan.tag.fio-experiment  -Dscan.tag.itops-${{ matrix.workers }}- -Dscan.tag.assembleDebug
                     wait
                 env:
