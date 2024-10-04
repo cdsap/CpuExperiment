@@ -18,7 +18,7 @@ jobs:
             -   id: calculate_iterations
                 run: |
                     iterations=" ["
-                    for i in {1..3}
+                    for i in {1..5}
                     do
                       if [ $i == 1 ]
                       then
@@ -62,11 +62,13 @@ jobs:
                     java-version: 17
             - name: Setup Gradle
               uses: gradle/actions/setup-gradle@v4
+              with:
+                 cache-read-only: false
             -   name: Assemble Release
                 run: |
                     sudo apt-get update && sudo apt-get install -y fio
-                    fio --name=random_read_write --ioengine=posixaio --runtime=720 --rw=randrw --bs=4k --size=1G --time_based  --group_reporting --direct=1 --iodepth=16 --rate_iops=${{ matrix.workers }} &
-                    ./gradlew clean assembleDebug -Dscan.tag.5new-fio-experiment  -Dscan.tag.itops-${{ matrix.workers }}- -Dscan.tag.assembleDebug
+                    fio --name=random_read_write --ioengine=posixaio --runtime=720 --rw=randrw --bs=16k --size=1G --time_based  --group_reporting --direct=1 --iodepth=16 --rate_iops=${{ matrix.workers }} &
+                    ./gradlew clean assembleDebug -Dscan.tag.6new-fio-experiment  -Dscan.tag.itops-${{ matrix.workers }}- -Dscan.tag.assembleDebug
                     wait
                 env:
                     GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
