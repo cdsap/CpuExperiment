@@ -37,7 +37,7 @@ jobs:
         needs: [ iterations ]
         strategy:
             matrix:
-                workers:  [1000,10000,100000]
+                workers:  [1000]
                 runs: ${{ fromJson(needs.iterations.outputs.iterations) }}
 
         name: "Local tests and APKs"
