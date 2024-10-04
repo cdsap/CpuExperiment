@@ -37,7 +37,7 @@ jobs:
         needs: [ iterations ]
         strategy:
             matrix:
-                workers:  [1000]
+                workers:  [1000,10000]
                 runs: ${{ fromJson(needs.iterations.outputs.iterations) }}
 
         name: "Local tests and APKs"
@@ -68,7 +68,7 @@ jobs:
                 run: |
                     sudo apt-get update && sudo apt-get install -y fio
                     #fio --name=iops_test --ioengine=posixaio --runtime=60  --rw=randrw --rwmixread=50 --bs=4k --size=1G --time_based --group_reporting --iodepth=256 --numjobs=16 --direct=0 --verify=crc32
-                    fio --name=random_read_write --ioengine=posixaio --runtime=720 --rw=randrw --rwmixread=50  --bs=4k --size=1G --time_based  --group_reporting -iodepth=256 --numjobs=16 --direct=0 --verify=crc32 --rate_iops=${{ matrix.workers }} &
+                    fio --name=random_read_write --ioengine=posixaio --runtime=720 --rw=randrw --rwmixread=50  --bs=4k --size=1G --time_based  --group_reporting -iodepth=128 --numjobs=8 --direct=0 --verify=crc32 --rate_iops=${{ matrix.workers }} &
                     ./gradlew clean assembleDebug -Dscan.tag.7new-fio-experiment  -Dscan.tag.itops-${{ matrix.workers }}- -Dscan.tag.assembleDebug
                     wait
                 env:
