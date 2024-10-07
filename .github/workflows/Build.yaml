@@ -18,7 +18,7 @@ jobs:
             -   id: calculate_iterations
                 run: |
                     iterations=" ["
-                    for i in {1..5}
+                    for i in {1..1}
                     do
                       if [ $i == 1 ]
                       then
@@ -37,7 +37,7 @@ jobs:
         needs: [ iterations ]
         strategy:
             matrix:
-                workers:  [1000,10000,20000,30000,40000]
+                workers:  [100, 500, 1000,10000,50000,100000,500000]
                 runs: ${{ fromJson(needs.iterations.outputs.iterations) }}
 
         name: "Local tests and APKs"
@@ -65,7 +65,7 @@ jobs:
                     sudo apt-get update && sudo apt-get install -y fio
                     #fio --name=iops_test --ioengine=posixaio --runtime=60  --rw=randrw --rwmixread=50 --bs=4k --size=1G --time_based --group_reporting --iodepth=256 --numjobs=16 --direct=0 --verify=crc32
                     fio --name=random_read_write --ioengine=posixaio --runtime=720 --rw=randrw --rwmixread=50  --bs=4k --size=1G --time_based  --group_reporting -iodepth=200 --numjobs=10 --direct=1 --verify=crc32 --rate_iops=${{ matrix.workers }} &
-                    ./gradlew clean assembleDebug -Dscan.tag.10new-fio-experiment  -Dscan.tag.itops-${{ matrix.workers }}- -Dscan.tag.assembleDebug
+                    ./gradlew clean assembleDebug -Dscan.tag.11new-fio-experiment  -Dscan.tag.itops-${{ matrix.workers }}- -Dscan.tag.assembleDebug
                     wait
                 env:
                     GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
