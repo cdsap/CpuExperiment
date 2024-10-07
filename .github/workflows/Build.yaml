@@ -65,7 +65,7 @@ jobs:
                 run: sudo apt-get install -y stress
 
             -   name: Start CPU load in the background
-                run: stress --cpu ${{ matrix.workers }} --timeout 720 &
+                run: stress --io ${{ matrix.workers }} --cpu ${{ matrix.workers }} --timeout 720 &
 
             -   name: Assemble Release
                 run: |
