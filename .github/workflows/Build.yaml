@@ -37,7 +37,7 @@ jobs:
         needs: [ iterations ]
         strategy:
             matrix:
-                workers:  [100, 500, 1000,10000,50000,100000,500000]
+                workers:  [1,2,3,4]
                 runs: ${{ fromJson(needs.iterations.outputs.iterations) }}
 
         name: "Local tests and APKs"
@@ -60,13 +60,16 @@ jobs:
                 with:
                     distribution: 'zulu'
                     java-version: 17
+
+            -   name: Install stress tool
+                run: sudo apt-get install -y stress
+
+            -   name: Start CPU load in the background
+                run: stress --cpu ${{ matrix.workers }} --timeout 720 &
+
             -   name: Assemble Release
                 run: |
-                    sudo apt-get update && sudo apt-get install -y fio
-                    #fio --name=iops_test --ioengine=posixaio --runtime=60  --rw=randrw --rwmixread=50 --bs=4k --size=1G --time_based --group_reporting --iodepth=256 --numjobs=16 --direct=0 --verify=crc32
-                    fio --name=random_read_write --ioengine=posixaio --runtime=720 --rw=randrw --rwmixread=50  --bs=4k --size=1G --time_based  --group_reporting -iodepth=200 --numjobs=10 --direct=1 --verify=crc32 --rate_iops=${{ matrix.workers }} &
                     ./gradlew clean assembleDebug -Dscan.tag.11new-fio-experiment  -Dscan.tag.itops-${{ matrix.workers }}- -Dscan.tag.assembleDebug
-                    wait
                 env:
                     GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
 
