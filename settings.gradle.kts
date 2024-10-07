@@ -23,7 +23,7 @@ pluginManagement {
     }
 }
 plugins {
-    id("com.gradle.develocity") version "3.17.4"
+    id("com.gradle.develocity") version "3.18"
 }
 
 develocity {
@@ -74,4 +74,5 @@ include(":lint")
 include(":sync:work")
 include(":sync:sync-test")
 include(":ui-test-hilt-manifest")
+
 
