@@ -18,7 +18,7 @@ jobs:
             -   id: calculate_iterations
                 run: |
                     iterations=" ["
-                    for i in {1..20}
+                    for i in {1..1}
                     do
                       if [ $i == 1 ]
                       then
@@ -34,11 +34,11 @@ jobs:
             iterations: ${{ steps.calculate_iterations.outputs.iterations }}
 
     test_and_apk:
-        needs: [iterations]
+        needs: [ iterations ]
         strategy:
             matrix:
-                workers: [1, 2, 3, 4]
-                runs:   ${{ fromJson(needs.iterations.outputs.iterations) }}
+                workers:  [1,2,3,4]
+                runs: ${{ fromJson(needs.iterations.outputs.iterations) }}
 
         name: "Local tests and APKs"
         runs-on: ubuntu-latest
@@ -49,21 +49,27 @@ jobs:
         timeout-minutes: 60
 
         steps:
-            - name: Collect Workflow Telemetry
-              uses: catchpoint/workflow-telemetry-action@v2
+            -   name: Collect Workflow Telemetry
+                uses: catchpoint/workflow-telemetry-action@v2
 
-            - name: Checkout
-              uses: actions/checkout@v4
+            -   name: Checkout
+                uses: actions/checkout@v4
 
-            - name: Set up JDK 17
-              uses: actions/setup-java@v4
-              with:
-                  distribution: 'zulu'
-                  java-version: 17
+            -   name: Set up JDK 17
+                uses: actions/setup-java@v4
+                with:
+                    distribution: 'zulu'
+                    java-version: 17
 
-            - name: Assemble Release
-              run: |
-                ./gradlew assembleDebug -Dorg.gradle.workers.max=${{ matrix.workers }} -Dscan.tag.workers${{ matrix.runs }}  -Dscan.tag.workers${{ matrix.workers }} -Dscan.tag.assembleDebug
-              env:
-                  GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
+            -   name: Install stress tool
+                run: sudo apt-get install -y stress
+
+            -   name: Start CPU load in the background
+                run: stress --io ${{ matrix.workers }}  --timeout 1000 &
+
+            -   name: Assemble Release
+                run: |
+                    ./gradlew clean assembleDebug -Dscan.tag.only-disk-stress-experiment  -Dscan.tag.itops-${{ matrix.workers }}- -Dscan.tag.assembleDebug
+                env:
+                    GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
 
