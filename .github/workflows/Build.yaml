@@ -1,75 +1,48 @@
-name: Build
-
+name: Run Gradle on PRs
 on:
     push:
-        branches:
-            - main
-    pull_request:
-
-concurrency:
-    group: build-${{ github.ref }}
-    cancel-in-progress: true
-
+        branches: [ test_with_docker_image]
 jobs:
     iterations:
         name: Generate versions
         runs-on: ubuntu-latest
         steps:
-            -   id: calculate_iterations
-                run: |
-                    iterations=" ["
-                    for i in {1..1}
-                    do
-                      if [ $i == 1 ]
-                      then
-                        iterations="$iterations \"$i\""
-                      else
-                        iterations="$iterations  , \"$i\""
-                      fi
-                    done
-                    iterations="$iterations ]"
-                    echo "iterations=$iterations" >> $GITHUB_OUTPUT
-                    echo $GITHUB_OUTPUT
+            - id: calculate_iterations
+              run: |
+                  iterations=" ["
+                  for i in {1..2}
+                  do
+                    if [ $i == 1 ]
+                    then
+                      iterations="$iterations \"$i\""
+                    else
+                      iterations="$iterations  , \"$i\""
+                    fi
+                  done
+                  iterations="$iterations ]"
+                  echo "iterations=$iterations" >> $GITHUB_OUTPUT
+                  echo $GITHUB_OUTPUT
         outputs:
             iterations: ${{ steps.calculate_iterations.outputs.iterations }}
-
-    test_and_apk:
-        needs: [ iterations ]
+    execution:
+        needs: [iterations]
         strategy:
             matrix:
-                workers:  [1,2,3,4]
-                runs: ${{ fromJson(needs.iterations.outputs.iterations) }}
-
-        name: "Local tests and APKs"
+                variant: ["cdsap/android-builder:0.5"]
+                runs:   ${{ fromJson(needs.iterations.outputs.iterations) }}
         runs-on: ubuntu-latest
-        permissions:
-            contents: write
-            pull-requests: write
-
-        timeout-minutes: 60
-
+        container:
+            image: ${{ matrix.variant }}
+            options: --device-read-iops=3000 --device-write-iops=3000
         steps:
-            -   name: Collect Workflow Telemetry
-                uses: catchpoint/workflow-telemetry-action@v2
-
-            -   name: Checkout
-                uses: actions/checkout@v4
-
-            -   name: Set up JDK 17
-                uses: actions/setup-java@v4
-                with:
-                    distribution: 'zulu'
-                    java-version: 17
-
-            -   name: Install stress tool
-                run: sudo apt-get install -y stress
-
-            -   name: Start CPU load in the background
-                run: stress --io ${{ matrix.workers }}  --timeout 1000 &
-
-            -   name: Assemble Release
-                run: |
-                    ./gradlew clean assembleDebug -Dscan.tag.only-disk-stress-experiment  -Dscan.tag.itops-${{ matrix.workers }}- -Dscan.tag.assembleDebug
-                env:
-                    GRADLE_ENTERPRISE_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
-
+            - uses: actions/checkout@v4
+            - uses: actions/setup-java@v4
+              with:
+                  distribution: corretto
+                  java-version: 17
+            - name: Build
+              run: |
+                  echo $LD_PRELOAD
+                  ./gradlew assembleDebug -Dscan.tag.${{github.run_number}}  -Dscan.tag.${{ matrix.variant }} -Dscan.tag.experiment-resources-debug
+              env:
+                  DEVELOCITY_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
