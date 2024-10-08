@@ -33,7 +33,7 @@ jobs:
         runs-on: ubuntu-latest
         container:
             image: ${{ matrix.variant }}
-            options: --device-read-iops=/dev/sda:3000 --device-write-iops=/dev/sda:3000
+            options: --device-read-iops=/dev/sda:1000 --device-write-iops=/dev/sda:1000
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-java@v4
