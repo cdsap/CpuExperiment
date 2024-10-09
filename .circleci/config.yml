@@ -35,7 +35,7 @@ remove_lock_files: &remove_lock_files
 jobs:
     say-hello:
         docker:
-            - image: cimg/android:2022.09
+            - image: cimg/android:2024.10
         steps:
             - checkout
             - <<: *restore_cache_wrapper
@@ -48,7 +48,7 @@ jobs:
 
     second-step:
         docker:
-            - image: cimg/android:2022.09
+            - image: cimg/android:2024.10
         steps:
             - checkout
             - <<: *restore_cache_wrapper
