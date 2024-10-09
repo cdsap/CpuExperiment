@@ -40,10 +40,6 @@ jobs:
               with:
                   distribution: corretto
                   java-version: 17
-            -   name: Install stress tool
-                run: sudo apt-get install -y stress
-            -   name: Start CPU load in the background
-                run: stress --io 20000  --timeout 8000 &
             - name: Build
               run: |
                   df -h
@@ -67,10 +63,6 @@ jobs:
               with:
                   distribution: corretto
                   java-version: 17
-            -   name: Install stress tool
-                run: sudo apt-get install -y stress
-            -   name: Start CPU load in the background
-                run: stress --io 20000  --timeout 8000 &
             - name: Build
               run: |
                   df -h
@@ -87,17 +79,13 @@ jobs:
         runs-on: ubuntu-latest
         container:
             image: ${{ matrix.variant }}
-            options: --device-read-iops=/dev/sda:900 --device-write-iops=/dev/sda:900
+            options: --device-read-iops=/dev/sda:100 --device-write-iops=/dev/sda:100
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-java@v4
               with:
                   distribution: corretto
                   java-version: 17
-            -   name: Install stress tool
-                run: sudo apt-get install -y stress
-            -   name: Start CPU load in the background
-                run: stress --io 20000  --timeout 8000 &
             - name: Build
               run: |
                   df -h
