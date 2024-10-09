@@ -1,0 +1,69 @@
+version: 2.1
+parameters:
+    cache-version:
+        type: string
+        default: "0.9"
+
+save_cache_wrapper: &save_cache_wrapper
+    save_cache:
+        key: << pipeline.parameters.cache-version >>-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+        paths:
+            - ~/.gradle/wrapper/
+restore_cache_wrapper: &restore_cache_wrapper
+    restore_cache:
+        key: << pipeline.parameters.cache-version >>-gradle-wrapper-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}
+
+
+save_cache_assemble: &save_cache_assemble
+    save_cache:
+        key: << pipeline.parameters.cache-version >>-assemble-{{ checksum "settings.gradle.kts" }}
+        paths:
+            - ~/.gradle/caches/modules-2/
+
+restore_cache_assemble: &restore_cache_assemble
+    restore_cache:
+        key: << pipeline.parameters.cache-version >>-assemble-{{ checksum "settings.gradle.kts" }}
+
+remove_lock_files: &remove_lock_files
+    run:
+        name: "Remove lock Files"
+        command: |
+            cd ~/.gradle/caches/
+            find . -name "*.lock" -delete
+            find . -name "gc.properties" -delete
+
+jobs:
+    say-hello:
+        docker:
+            - image: cimg/android:2022.09
+        steps:
+            - checkout
+            - <<: *restore_cache_wrapper
+            - run:
+                  name: "Help"
+                  command: ./gradlew assembleDebug
+            - <<: *save_cache_wrapper
+            - <<: *remove_lock_files
+            - <<: *save_cache_assemble
+
+    second-step:
+        docker:
+            - image: cimg/android:2022.09
+        steps:
+            - checkout
+            - <<: *restore_cache_wrapper
+            - <<: *restore_cache_assemble
+            - run:
+                  name: "Help"
+                  command: ./gradlew clean assembleDebug
+            - <<: *save_cache_wrapper
+            - <<: *remove_lock_files
+            - <<: *save_cache_assemble
+
+workflows:
+    say-hello-workflow:
+        jobs:
+            - say-hello
+            - second-step:
+                  requires:
+                      - say-hello
