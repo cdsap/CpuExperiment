@@ -33,7 +33,7 @@ jobs:
         runs-on: ubuntu-latest
         container:
             image: ${{ matrix.variant }}
-            options: --blkio-weight 1000
+            options: --device-read-iops=/dev/sda:10 --device-write-iops=/dev/sda:10
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-java@v4
