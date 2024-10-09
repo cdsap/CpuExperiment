@@ -10,7 +10,7 @@ jobs:
             - id: calculate_iterations
               run: |
                   iterations=" ["
-                  for i in {1..3}
+                  for i in {1..5}
                   do
                     if [ $i == 1 ]
                     then
@@ -79,7 +79,7 @@ jobs:
         runs-on: ubuntu-latest
         container:
             image: ${{ matrix.variant }}
-            options: --device-read-iops=/dev/sda:2000 --device-write-iops=/dev/sda:2000
+            options: --device-read-iops=/dev/sda:900 --device-write-iops=/dev/sda:900
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-java@v4
