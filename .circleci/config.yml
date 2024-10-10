@@ -41,7 +41,7 @@ jobs:
             - <<: *restore_cache_wrapper
             - run:
                   name: "Help"
-                  command: ./gradlew assembleDebug
+                  command: ./gradlew clean assembleDebug
             - <<: *save_cache_wrapper
             - <<: *remove_lock_files
             - <<: *save_cache_assemble
