@@ -3,7 +3,7 @@ on:
     push:
         branches: [ test_cache_ro ]
 jobs:
-    execution:
+    populate_cache:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
@@ -22,10 +22,10 @@ jobs:
               uses: actions/cache@v3
               with:
                 path: cache-ro
-                key: gradle-cache-file-02
+                key: gradle-cache-file-03
 
-    execution2:
-        needs: ["execution"]
+    consume_cache:
+        needs: ["populate_cache"]
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
@@ -33,14 +33,13 @@ jobs:
               with:
                   distribution: corretto
                   java-version: 17
-            - name: Check fors Cached File
+            - name: Get Cache
               uses: actions/cache@v3
               with:
                  path: cache-ro
-                 key: gradle-cache-file-02
+                 key: gradle-cache-file-03
             - name: Build
               run: |
-                  ls
                   export GRADLE_RO_DEP_CACHE=$PWD/cache-ro
                   ./gradlew :help
               env:
