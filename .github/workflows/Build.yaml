@@ -22,7 +22,7 @@ jobs:
               uses: actions/cache@v3
               with:
                 path: cache-ro
-                key: gradle-cache-file-01
+                key: gradle-cache-file-02
 
     execution2:
         needs: ["execution"]
@@ -37,10 +37,11 @@ jobs:
               uses: actions/cache@v3
               with:
                  path: cache-ro
-                 key: gradle-cache-file-01
+                 key: gradle-cache-file-02
             - name: Build
               run: |
-                  export GRADLE_RO_DEP_CACHE="cache-ro"
+                  ls
+                  export GRADLE_RO_DEP_CACHE=$PWD/cache-ro
                   ./gradlew :help
               env:
                   DEVELOCITY_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
