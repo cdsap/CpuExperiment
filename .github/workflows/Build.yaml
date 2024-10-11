@@ -23,6 +23,7 @@ jobs:
                 key: gradle-cache-file-01
 
     execution2:
+        needs: ["execution"]
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
