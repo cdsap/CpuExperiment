@@ -14,12 +14,14 @@ jobs:
             - name: Build
               run: |
                   ./gradlew :help
+                  mkdir cache-ro
+                  cp -r ~/.gradle/caches/modules-2 cache-ro
               env:
                   DEVELOCITY_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
             - name: Cache the Generated File
               uses: actions/cache@v3
               with:
-                path: ~/.gradle/caches
+                path: cache-ro
                 key: gradle-cache-file-01
 
     execution2:
@@ -34,10 +36,11 @@ jobs:
             - name: Check fors Cached File
               uses: actions/cache@v3
               with:
-                 path: ~/.gradle/caches
+                 path: cache-ro
                  key: gradle-cache-file-01
             - name: Build
               run: |
-                  ls
+                  export GRADLE_RO_DEP_CACHE="cache-ro"
+                  ./gradlew :help
               env:
                   DEVELOCITY_ACCESS_KEY: ${{ secrets.GE_SOLUTIONS_ACCESS_TOKEN }}
