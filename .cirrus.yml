@@ -1,0 +1,5 @@
+container:
+    image: ghcr.io/cirruslabs/android-sdk:30
+
+check_android_task:
+    check_script: ./gradlew clean assembleDebug
